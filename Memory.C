@@ -54,15 +54,19 @@ uint64_t Memory::getLong(int32_t address, bool & imem_error)
         if(address >= 0 && (address +7) < MEMSIZE){
             //if out of range, set error to false return current 
             imem_error = false;
-            uint64_t current ;// gets the current address.ask Adam
-            return current;
+            uint64_t specifiedAddr   ;// gets the current address. Make a call to buildLong??
+            return specifiedAddr ;
         }
         else{
             imem_error = true;
-            return 0;
+
         }
     }
-        
+     else{
+            imem_error = true;
+
+        }
+    return false;
 }
 
 /**
@@ -83,6 +87,7 @@ uint8_t Memory::getByte(int32_t address, bool & imem_error)
     }
     else{
         imem_error = true; // is not in range
+         return imem_error;
     }
 }
 
@@ -106,7 +111,6 @@ void Memory::putLong(uint64_t value, int32_t address, bool & imem_error)
         }
         else{
             imem_error = true;
-            return 0;
         }
     }
    return;// work on tonight
