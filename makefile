@@ -21,7 +21,7 @@ RegisterFile.o: RegisterFile.h Tools.h
 
 RegisterFileTester.o: RegisterFile.h RegisterFileTester.h 
 
-Tools.o: Tools.c Tools.h
+Tools.o: Tools.h
 
 lab4: $(OBJ)
 
@@ -29,7 +29,7 @@ clean:
 	rm $(OBJ) lab4
 
 run:
-	make clean
+
 	make lab4
 	./run.sh
 
