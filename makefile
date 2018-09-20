@@ -7,29 +7,21 @@ RegisterFileTester.o ConditionCodes.o ConditionCodesTester.o
 	$(CC) $(CFLAGS) $< -o $@
 
 
-ConditionCodes.o: ConditionCodes.c ConditionCodes.h 
+ConditionCodes.o: ConditionCodes.h Tools.h
 
-ConditionCodesTester.o: ConditionCodesTester.c ConditionCodesTester.h 
+ConditionCodesTester.o: ConditionCodes.h ConditionCodesTester.h 
 
-<<<<<<< HEAD
-lab4.o: lab4.c lab4.h ConditionCodes.c ConditionCodes.h ConditionCodesTester.c ConditionCodesTester.h  Memory.h MemoryTester.h RegisterFile.c RegisterFile.h RegisterFileTester.C RegisterFileTester.h Tools.c Tools.h
-=======
-lab4.o: lab4.c lab4.h ConditionCodes.c ConditionCodes.h ConditionCodesTester.c ConditionCodesTester.h  Memory.h MemoryTester.h RegisterFile.C RegisterFile.h RegisterFileTester.C RegisterFileTester.h Tools.C Tools.h
->>>>>>> c680ddd4e93b1196d13d7f2302ff798da006ece4
+lab4.o: Memory.h RegisterFile.h MemoryTester.h RegisterFileTester.h ConditionCodes.h ConditionCodesTester.h
 
-Memory.o: Memory.c Memory.h Tools.h
+Memory.o: Memory.h Tools.h
 
-MemoryTester.o: MemoryTester.h Tools.h
+MemoryTester.o: Memory.h MemoryTester.h
 
-RegisterFile.o: RegisterFile.c RegisterFile.h Tools.h
+RegisterFile.o: RegisterFile.h Tools.h
 
-RegisterFileTester.o: RegisterFileTester.c RegisterFileTester.h Tools.h
+RegisterFileTester.o: RegisterFile.h RegisterFileTester.h 
 
 Tools.o: Tools.c Tools.h
-
-
-
-
 
 lab4: $(OBJ)
 
