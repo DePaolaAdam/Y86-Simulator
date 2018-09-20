@@ -1,0 +1,8 @@
+9/11: Started lab 
+9/15: Created the makeFile, pushed to repository. 
+9/16: Started Memory.C; completed constructor and getInstance
+9/17: Continued to work on Memory.C; stuck on getLong
+9/18: Same as above; completed getByte. Forgot to add lab4.o to makefile.
+      Adjusted makefile accordingly.
+9/19: Completed Memory.C, except for getLong and putLong. 
+      Adam and I worked together for ConditionCodes.C, pushed updated makeFile to repository

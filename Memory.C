@@ -13,6 +13,10 @@ Memory * Memory::memInstance = NULL;
  */
 Memory::Memory()
 {
+    for(int i = 0; i< MEMSIZE; i++)// clears whatever is in the array to 0
+    {
+        mem[i] = 0;
+    }
 }
 
 /**
@@ -24,7 +28,13 @@ Memory::Memory()
  */
 Memory * Memory::getInstance()
 {
-   return NULL;
+   if(memInstance == NULL){
+        memInstance = new Memory();
+        return memInstance;
+    }
+   else{
+        return memInstance;
+   }
 }
 
 /**
@@ -40,7 +50,19 @@ Memory * Memory::getInstance()
  */
 uint64_t Memory::getLong(int32_t address, bool & imem_error)
 {
-   return 0;
+    if((address % 8) == 0){//if aligned
+        if(address >= 0 && (address +7) < MEMSIZE){
+            //if out of range, set error to false return current 
+            imem_error = false;
+            uint64_t current ;// gets the current address.ask Adam
+            return current;
+        }
+        else{
+            imem_error = true;
+            return 0;
+        }
+    }
+        
 }
 
 /**
@@ -55,7 +77,13 @@ uint64_t Memory::getLong(int32_t address, bool & imem_error)
  */
 uint8_t Memory::getByte(int32_t address, bool & imem_error)
 {
-   return 0;
+    if(address >=0 && address < MEMSIZE){
+        imem_error = false;// runs if it is in range
+        return mem[address];
+    }
+    else{
+        imem_error = true; // is not in range
+    }
 }
 
 /**
@@ -70,8 +98,18 @@ uint8_t Memory::getByte(int32_t address, bool & imem_error)
  * @return imem_error is set to true or false
  */
 void Memory::putLong(uint64_t value, int32_t address, bool & imem_error)
-{
-   return;
+{// work on tomorrow have feeling is similar to getLong
+    if((address % 8) == 0){//if aligned
+        if(address >= 0 && (address +7) < MEMSIZE){//if out of range, set error to false return current 
+            imem_error = false;
+            //something here... ask Adam tomorrow.
+        }
+        else{
+            imem_error = true;
+            return 0;
+        }
+    }
+   return;// work on tonight
 }
 
 /**
@@ -87,7 +125,15 @@ void Memory::putLong(uint64_t value, int32_t address, bool & imem_error)
 
 void Memory::putByte(uint8_t value, int32_t address, bool & imem_error)
 {
-   return;
+    if(address >=0 && address < MEMSIZE){
+        imem_error = false;
+        value = mem[address];
+    }
+    else{
+        imem_error = true;
+        //work on tonight
+    }
+
 }
 
 /**

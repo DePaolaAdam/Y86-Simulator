@@ -1,8 +1,8 @@
 //The actual bits used within the codes register are
 //arbitrary. Use OF, SF, ZF in your code, not 3, 6, 2
-#define OF 3   //bit 3 of codes
-#define SF 6   //bit 6 of codes
-#define ZF 2   //bit 2 of codes
+#define OF 4   //bit 3 of codes
+#define SF 7   //bit 6 of codes
+#define ZF 3   //bit 2 of codes
 
 class ConditionCodes 
 {

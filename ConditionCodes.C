@@ -13,7 +13,7 @@ ConditionCodes * ConditionCodes::ccInstance = NULL;
  */
 ConditionCodes::ConditionCodes()
 {
-
+   codes = 0;
 }
 
 /**
@@ -26,7 +26,15 @@ ConditionCodes::ConditionCodes()
  */
 ConditionCodes * ConditionCodes::getInstance()
 {
-   return NULL;
+    if(ccInstance == NULL){
+        ccInstance  = new ConditionCodes();
+        return ccInstance;
+    }
+
+    else{
+        return ccInstance;
+    }
+
 }
 
 /*
@@ -42,6 +50,7 @@ ConditionCodes * ConditionCodes::getInstance()
  */
 bool ConditionCodes::getConditionCode(int32_t ccNum, bool & error)
 {
+    if(ccNum >= 0 && ccN
    return false;
 }
 
