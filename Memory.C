@@ -50,22 +50,19 @@ Memory * Memory::getInstance()
  */
 uint64_t Memory::getLong(int32_t address, bool & imem_error)
 {
+    
     if((address % 8) == 0){//if aligned
-        if(address >= 0 && (address +7) < MEMSIZE){
-            //if out of range, set error to false return current 
-            imem_error = false;
-            uint64_t specifiedAddr   ;// gets the current address. Make a call to buildLong??
-            return specifiedAddr ;
-        }
-        else{
-            imem_error = true;
-
+        if(address >= 0 && address <= MEMSIZE){ // if in range  
+            imem_error = false;// no error
+            return 1;
         }
     }
-     else{
+                   
+        else{
             imem_error = true;
-
+            return 0;
         }
+
     return false;
 }
 
@@ -81,13 +78,13 @@ uint64_t Memory::getLong(int32_t address, bool & imem_error)
  */
 uint8_t Memory::getByte(int32_t address, bool & imem_error)
 {
-    if(address >=0 && address < MEMSIZE){
-        imem_error = false;// runs if it is in range
-        return mem[address];
+    if(address >=0 && address < MEMSIZE){// runs if it is in range
+        imem_error = false;// no error
+        return mem[address];//return  the address in the mem array
     }
     else{
         imem_error = true; // is not in range
-         return imem_error;
+         return 0;
     }
 }
 
@@ -104,16 +101,14 @@ uint8_t Memory::getByte(int32_t address, bool & imem_error)
  */
 void Memory::putLong(uint64_t value, int32_t address, bool & imem_error)
 {// work on tomorrow have feeling is similar to getLong
-    if((address % 8) == 0){//if aligned
-        if(address >= 0 && (address +7) < MEMSIZE){//if out of range, set error to false return current 
-            imem_error = false;
-            //something here... ask Adam tomorrow.
-        }
-        else{
-            imem_error = true;
-        }
+    if(address >=0 && address < MEMSIZE){
+        imem_error = false;// runs if it is in range
+        return;
     }
-   return;// work on tonight
+    else{
+        imem_error = true; // is not in range
+         return;
+    }
 }
 
 /**
@@ -129,14 +124,15 @@ void Memory::putLong(uint64_t value, int32_t address, bool & imem_error)
 
 void Memory::putByte(uint8_t value, int32_t address, bool & imem_error)
 {
-    if(address >=0 && address < MEMSIZE){
+    if (address >= 0 && address <= MEMSIZE){
         imem_error = false;
-        value = mem[address];
-    }
-    else{
-        imem_error = true;
-        //work on tonight
-    }
+        mem[address] = value;
+        }
+    
+        else{
+            imem_error = true;
+            return;
+        }
 
 }
 
