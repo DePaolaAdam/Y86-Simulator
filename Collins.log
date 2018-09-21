@@ -5,4 +5,7 @@
 9/18: Same as above; completed getByte. Forgot to add lab4.o to makefile.
       Adjusted makefile accordingly.
 9/19: Completed Memory.C, except for getLong and putLong. 
-      Adam and I worked together for ConditionCodes.C, pushed updated makeFile to repository
+      Adam and I worked together for ConditionCodes.C, pushed updated makeFile to repository.
+      Found out Memory.c did not compile, deleted getLong, getByte, and the put methods and 
+      re-evaluated and found flaws in my initial code.
+      Working with power flickering and dodgy internet during hurricane probably didn't help.
