@@ -1,1 +1,11 @@
-
+9/11: Started lab 
+9/16: Started on RegisterFile.C and got code in every method. Doesn't work yet.
+9/19: 
+      Completed RegisterFile.C, most of the problems were figuring out the testing and github pushing.
+      Started ConditionCodes.C, just the constructor.
+      Adam and I worked together for ConditionCodes.C, pushed updated makeFile to repository.
+ 9/23: Co-Completed ConditionCodes.C, pushed with RegisterFile, still working on Memory.
+ 9/24: Working on Memory.C. Having trouble with putting anything into the mem array.
+       Discovered problem with mem array, it is an 8 bit array so it'll only take 8 at a time, should be done soon.
+       Memory.C completed after some quick work on getLong.
+       Everything is done.
