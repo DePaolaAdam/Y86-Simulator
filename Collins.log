@@ -9,3 +9,4 @@
       Found out Memory.c did not compile, deleted getLong, getByte, and the put methods and 
       re-evaluated and found flaws in my initial code.
       Working with power flickering and dodgy internet during hurricane probably didn't help.
+ 9/23: Co-Completed ConditionCodes.C, pushed with RegisterFile, still working on Memory.
