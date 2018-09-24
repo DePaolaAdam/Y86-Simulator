@@ -52,10 +52,21 @@ uint64_t Memory::getLong(int32_t address, bool & imem_error)
 {
     
     if((address % 8) == 0){//if aligned
-        if(address >= 0 && address <= MEMSIZE){ // if in range  
-            imem_error = false;// no error
-            return 1;
+        if(address >= 0 && address < MEMSIZE){ // if in range  
+        imem_error = false;// no error
+	uint64_t val = 0;
+	for(int i = 0; i < 8; i++)
+	{
+		val = val << 8;
+		val += mem[address + i];
+	}
+        return val;
         }
+	else
+	{
+		imem_error = true;
+		return 0;
+	}
     }
                    
         else{
@@ -101,8 +112,14 @@ uint8_t Memory::getByte(int32_t address, bool & imem_error)
  */
 void Memory::putLong(uint64_t value, int32_t address, bool & imem_error)
 {// work on tomorrow have feeling is similar to getLong
-    if(address >=0 && address < MEMSIZE){
-        imem_error = false;// runs if it is in range
+    if(address >= 0 && address < MEMSIZE && address % 8 == 0)
+	{
+	for(int i = 7; i > 0; i--)
+	{
+		mem[address + (7 - i)] = (uint8_t)Tools::getByte(value, i);
+        }
+	imem_error = false;// runs if it is in range
+	
         return;
     }
     else{
@@ -124,7 +141,7 @@ void Memory::putLong(uint64_t value, int32_t address, bool & imem_error)
 
 void Memory::putByte(uint8_t value, int32_t address, bool & imem_error)
 {
-    if (address >= 0 && address <= MEMSIZE){
+    if (address >= 0 && address < MEMSIZE){
         imem_error = false;
         mem[address] = value;
         }
