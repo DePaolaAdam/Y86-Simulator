@@ -10,3 +10,6 @@
       re-evaluated and found flaws in my initial code.
       Working with power flickering and dodgy internet during hurricane probably didn't help.
  9/23: Co-Completed ConditionCodes.C, pushed with RegisterFile, still working on Memory.
+9/24: Unable to push on my end due to  
+    " ! [rejected]        master -> master (fetch first) " error.
+    Adam was able to figure out what was wrong with my Memory and updated via Github
