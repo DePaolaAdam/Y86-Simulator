@@ -13,7 +13,7 @@ ConditionCodes * ConditionCodes::ccInstance = NULL;
  */
 ConditionCodes::ConditionCodes()
 {
-   codes = 0;
+    codes = 0;
 }
 
 /**
@@ -26,15 +26,11 @@ ConditionCodes::ConditionCodes()
  */
 ConditionCodes * ConditionCodes::getInstance()
 {
-    if(ccInstance == NULL){
-        ccInstance  = new ConditionCodes();
-        return ccInstance;
+    if(ccInstance == NULL)
+    {
+        ccInstance = new ConditionCodes();
     }
-
-    else{
-        return ccInstance;
-    }
-
+    return ccInstance;
 }
 
 /*
@@ -50,8 +46,14 @@ ConditionCodes * ConditionCodes::getInstance()
  */
 bool ConditionCodes::getConditionCode(int32_t ccNum, bool & error)
 {
-    if(ccNum >= 0 && ccN
-   return false;
+    if(ccNum == OF || ccNum == ZF || ccNum == SF)
+    {
+	error = false;
+	return Tools::getBits(codes, ccNum, ccNum);
+		
+    }
+    error = true;
+    return false;
 }
 
 /*
@@ -69,7 +71,22 @@ bool ConditionCodes::getConditionCode(int32_t ccNum, bool & error)
 void ConditionCodes::setConditionCode(bool value, int32_t ccNum, 
                                       bool & error)
 {
-   return;
+    if(ccNum == OF || ccNum == SF || ccNum == ZF)
+    {
+        if(value == true)
+	{
+	    codes = Tools::setBits(codes, ccNum, ccNum);
+	}
+        if(value == false)
+	{
+	    codes = Tools::clearBits(codes, ccNum, ccNum);
+	}
+	    error = false;
+	}
+    else
+    {
+	error = true;
+    }
 }
 
 /*
