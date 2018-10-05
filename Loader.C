@@ -51,7 +51,7 @@ Loader::Loader(int argc, char * argv[])
    //  std::cout << "Error on line " << std::dec << lineNumber
    //       << ": " << line << std::endl;
 	bool error = false;
-	loadFile(argv[1], error);
+	load(argv[1], error);
 	if(error == true)
 	{
 		return;
@@ -67,7 +67,7 @@ bool Loader::checkSpaces(std::string line, uint64_t start, uint64_t end)
 	{
 		exit(1);
 	}
-	for(uint64_t i = start; i <= end; i++)
+	for(unsigned int i = start; i <= end; i++)
 	{
 		if(!isspace(line[i]))
 		{
@@ -76,7 +76,7 @@ bool Loader::checkSpaces(std::string line, uint64_t start, uint64_t end)
 	}
 	return true;
 }
-void Loader::loadFile(std::string file, bool & error)
+void Loader::load(char *file, bool & error)
 {
 	inf.open(file);
 	std::string fname(file);
@@ -93,24 +93,23 @@ void Loader::loadFile(std::string file, bool & error)
 	std::string line = "";
 	uint32_t count = 1;
 	uint64_t addr = 0;
-//	std::streamsize cc = 0;
-	
 	getline(inf, line);
 	while(inf)
 	{
-		if(!loadline(line, &addr, error))
-		{
-			std::cout << "error line: " <<  count;
-			std::cout << line;
-			error = true;
-			return;
-		}
-		else
-		{
+//		if(!loadline(line, &addr, error))
+//		{
+//			std::cout << "errorer line: " <<  count;
+//			std::cout << line;
+//			error = true;
+//			return;
+//		}
+//		else
+//		{
 			count++;	
 			getline(inf, line);
+			std::cout << line << std::endl;
 			std::cout << inf << std::endl;
-		}
+//		}
 	}
 	error = false;
 	return;
@@ -120,7 +119,7 @@ void Loader::loadFile(std::string file, bool & error)
 bool Loader::loadline(std::string line, uint64_t *addr, bool & error)
 {
 	int num = 0;
-	uint64_t add = 0;
+	uint64_t address = 0;
 	if(checkSpaces(line, 0, line.length() - 1))
 	{
 		return true;
@@ -131,7 +130,7 @@ bool Loader::loadline(std::string line, uint64_t *addr, bool & error)
 	}
 	else if(checkAddress(line, addr, error))
 	{
-		add = getAddress(line);
+		address = getAddress(line);
 		if(line[8] != ' ')
 		{
 			num = checkData(line);
@@ -141,8 +140,8 @@ bool Loader::loadline(std::string line, uint64_t *addr, bool & error)
 			}
 			else
 			{
-				storeData(line, add, error);
-				*addr = add + num;
+				storeData(line, address, error);
+				*addr = address + num;
 				return true;
 			}
 		}
@@ -157,7 +156,7 @@ uint64_t Loader::getAddress(std::string line)
 {
 	std::fstream con;
 	uint64_t address = 0;
-	line = line.substr(2, 4);
+	line = line.substr(ADDRBEGIN, ADDREND);
 	if(line.substr(3, 1) == ":")
 	{
 		line = line.substr(0, 3);
@@ -168,15 +167,26 @@ uint64_t Loader::getAddress(std::string line)
 }
 int Loader::checkData(std::string line)
 {
-	std::string record = line.substr(7);
+	std::string record = line.substr(DATABEGIN);
 	if(record.substr(0, 1) == " ")
 	{
-		if(checkSpaces(record, 0, 20))
+		if(checkSpaces(record, 0, 22))
 		{
 			return 0;
 		}
+		return -1;
+	}
+	if(checkSpaces(record, 0, 20))
+	{	
+		return 0;
 	}
 	std::string data = record.substr(0, record.find(' '));
+	if(!checkHex(data, 0, data.length() - 1)) return -1;
+	if(data.length() % 2 == 1) return -1;
+	if(record[2] != ' ') return -1;
+	if(record[21] == '|' && line[6] != ' ') return -1;
+	if(record[0] == ' ') return -1;
+
 	return data.length() / 2;
 }
 bool Loader::checkAddress(std::string line, uint64_t *addr, bool & error)
@@ -196,7 +206,7 @@ bool Loader::checkAddress(std::string line, uint64_t *addr, bool & error)
 			{
 				address = address.substr(0, 3);
 			}
-			if(checkHex(address, 0, address.length()))
+			if(checkHex(address, 0, address.length() - 1))
 			{
 				std::fstream converter(address);
 				uint64_t newAddress;
@@ -217,12 +227,12 @@ void Loader::storeData(std::string line, uint64_t addr, bool & error)
 	std::string byte = inst.substr(i, 2);
 	while(i < 20 && byte != "  ")
 	{
-		uint8_t hex = std::stoul(byte, nullptr, 16);
-		Memory *mem = Memory::getInstance();
-		mem->putByte(hex, addr, error);
+//		std::cout << byte << std::endl;
+		storeByte(byte, addr, error);
 		addr++;
 		i += 2;
 		byte = inst.substr(i, 2);
+		
 	}
 }
 bool Loader::checkHex(std::string line, uint64_t start, uint64_t end)
@@ -235,7 +245,12 @@ bool Loader::checkHex(std::string line, uint64_t start, uint64_t end)
 	}
 	return false;
 }
-
+void Loader::storeByte(std::string byte, uint64_t addr, bool & error)
+{
+	uint8_t hex = std::stoul(byte, nullptr, 16);
+	Memory *mem = Memory::getInstance();
+	mem->putByte(addr, hex, error);
+}
 
 
 /**
