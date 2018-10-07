@@ -42,7 +42,35 @@ Memory * Memory::getInstance()
  * returns the 64-bit word at the indicated address; sets imem_error
  * to false if the access is aligned and the address is within range;
  * otherwise sets imem_error to true
- *
+ *uint64_t Memory::getLong(int32_t address, bool & imem_error)
+{
+    
+    if((address % 8) == 0){//if aligned
+        if(address >= 0 && address < MEMSIZE){ // if in range  
+        imem_error = false;// no error
+	uint64_t val = 0;
+	for(int i = 0; i < 8; i++)
+	{
+		val = val << 8;
+		val += mem[address + i];
+	}
+        return val;
+        }
+	else
+	{
+		imem_error = true;
+		return 0;
+	}
+    }
+                   
+        else{
+            imem_error = true;
+            return 0;
+        }
+
+    return false;
+}
+
  * @param address of 64-bit word; access must be aligned (address % 8 == 0)
  * @return imem_error is set to true or false
  * @return returns 64-bit word at the specified address or 0 if the
@@ -55,7 +83,7 @@ uint64_t Memory::getLong(int32_t address, bool & imem_error)
         if(address >= 0 && address < MEMSIZE){ // if in range  
         imem_error = false;// no error
 	uint64_t val = 0;
-	for(int i = 0; i < 8; i++)
+	for(int i = 7; i >= 0; i--)
 	{
 		val = val << 8;
 		val += mem[address + i];
@@ -150,8 +178,8 @@ void Memory::putByte(uint8_t value, int32_t address, bool & imem_error)
             imem_error = true;
             return;
         }
-
-}
+//	std::cout << "BARAK" << mem[address] << std::endl;
+} 
 
 /**
  * dump
@@ -159,6 +187,22 @@ void Memory::putByte(uint8_t value, int32_t address, bool & imem_error)
  * Rather than output memory that contains a lot of 0s, it outputs
  * a * after a line to indicate that the values in memory up to the next
  * line displayed are identical.
+ * void Memory::placeByte(uint64_t byteAddress, uint8_t value)
+{
+	unsigned specByte = byteAddress & 0x07;
+	uint64_t data = fetch((byteAddress >> 3));
+	uint64_t newData = Tools::copyBits(data, value, specByte, specByte, 2);
+	store((byteAddress >> 3), newData);
+}
+void Memory::store(uint64_t waddr, uint64_t val)
+{
+	mem[waddr] = val;
+}
+uint64_t Memory::fetch(uint64_t waddr)
+{
+	return mem[waddr];
+}
+
  */
 void Memory::dump()
 {

@@ -13,5 +13,10 @@ class Memory
       uint8_t getByte(int32_t address, bool & error);
       void putLong(uint64_t value, int32_t address, bool & error);
       void putByte(uint8_t value, int32_t address, bool & error);
+//	void placeByte(uint64_t byteAddress, uint8_t value);
+//	void store(uint64_t waddr, uint64_t val);
+//	uint64_t fetch(uint64_t waddr);
+
+
       void dump();
 }; 

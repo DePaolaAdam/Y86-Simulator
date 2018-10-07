@@ -2,6 +2,7 @@
  * Names:Adam DePaola Brandon Collins
  * Team: 19
 */
+#include <iomanip>
 #include <iostream>
 #include <fstream>
 #include <string.h>
@@ -9,7 +10,7 @@
 #include <sstream>
 #include "Loader.h"
 #include "Memory.h"
-
+#include "Tools.h"
 //first column in file is assumed to be 0
 #define ADDRBEGIN 2   //starting column of 3 digit hex address 
 #define ADDREND 4     //ending column of 3 digit hext address
@@ -28,6 +29,7 @@
  * @param argv[0] is the name of the executable
  *        argv[1] is the name of the .yo file
  */
+Memory *mem = Memory::getInstance();
 Loader::Loader(int argc, char * argv[])
 {
    loaded = false;
@@ -50,43 +52,91 @@ Loader::Loader(int argc, char * argv[])
    //error message.  Change the variable names if you use different ones.
    //  std::cout << "Error on line " << std::dec << lineNumber
    //       << ": " << line << std::endl;
+	
 	bool error = false;
 	load(argv[1], error);
 	if(error == true)
 	{
-		std::cout << "SNEAKY" << std::endl;
 		return;
 	}
    //If control reaches here then no error was found and the program
    //was loaded into memory.
-//	std::cout << "SNEAKERS" << std::endl;
+	std::stringstream over;
+	std::string inst;
+	std::string myString;
+	
+	
+//	std::string test;	
+//	uint64_t dest = 0;
+//	uint8_t arr[8];
+//	for(int i = 0; i < 100; i += 8)
+//	{
+//		uint64_t flip = mem->getLong(i, error);
+//		std::cout << "Z" << flip << std::endl;
+//		over << std::hex << flip;
+//		myString = over.str();
+//		std::cout << "E" << myString << std::endl;
+//	
+//	for(int j = 7; j > 0; j--)
+//	{
+//		arr[7 - j] = (uint8_t)Tools::getByte(flip, j);
+//	}
+//	for(int i = 0; i < 100; i += 8)
+//	{
+//		uint64_t flip = mem->getLong(0, error);
+//		mem->putLong(dest, 0, error);
+//		over << std::hex << flip;
+////		myString = over.str();
+//		std::cout << "WEEWEE" << myString << std::endl;
+//	}
+//	}
+//	std::cout << "E" << arr[1] << std::endl;
+//		mem->putLong(flip, i, error);
+//	}
+//	uint64_t flip = mem->getLong(0, error);
+//	mem->putLong(dest, 0, error);
+//	over << std::hex << flip;
+//	myString = over.str();
+	
+//	for(int i = 0; i < 0x0a0; i += 0x008)
+//	{
+		
+//			if(myString.length() > 16)
+//			{
+//				myString = myString.substr(12, 16);
+//			}
+//		for(int j = 0; j <= myString.length() - 2; j += 2)
+//		{
+//			std::cout << "Z" << i << std::endl;
+//			
+//			std::cout << "B" << myString.length() << std::endl;
+//			std::cout << "Z" << myString << std::endl;
+//			inst = myString.substr(j, 2);
+//			dest = i + (myString.length() - j)/2;
+//			std::cout << "E" << inst << std::endl;
+//			std::cout << "D" << dest << std::endl;
+//			storeByte(inst, dest, error);
+//		}
+		
+//		flip = mem->getLong(i, error);
+//	over << std::hex << flip;
+//	myString = over.str();
+//	std::cout << "WEEWEE" << myString << std::endl;
+//	}
+//	std::cout << "WEEWEE" << myString << std::endl;
+//	myString = myString.substr(16, 15);
+	
+//	std::cout << "OKYE" << myString << std::endl;
+//	myString = myString.substr(16, 16);
+//	std::cout << "GAMATOTO" << myString << std::endl;
    loaded = true;  
   
 }
-bool Loader::checkSpaces(std::string line, uint64_t start, uint64_t end)
-{
-	if(end >= line.length())
-	{
-		std::cout << "big line error" << std::endl;
-		exit(1);
-	}
-	for(unsigned int i = start; i <= end; i++)
-	{
-		if(!isspace(line[i]))
-		{
-//			std::cout << "SUC" << std::endl;
-			return false;
-		}
-	}
-//	std::cout << "CONGRATZ" << std::endl;
-	return true;
-}
+
 void Loader::load(char *file, bool & error)
 {
 	inf.open(file);
 	std::string fname(file);
-//	fname[fname.length()] = '\0';
-	std::cout << fname << std::endl;
 	if(!inf.is_open())
 	{	
 		error = true;
@@ -104,10 +154,9 @@ void Loader::load(char *file, bool & error)
 	getline(inf, line);
 	while(inf)
 	{
-		if(!loadline(line, &addr, error))
+		if(!loadline(line, &addr, error) || addr > 0x1fff)
 		{
-			std::cout << "errorer line: " <<  count;
-			std::cout << line;
+			std::cout << "Error on line " << std::dec << count << ": " << line << std:: endl;
 			error = true;
 			return;
 		}
@@ -116,13 +165,19 @@ void Loader::load(char *file, bool & error)
 //			loadline(line, &addr, error);
 			count++;	
 			getline(inf, line);
-			std::cout << line << std::endl;
+//			std::cout << line << std::endl;
 //			std::cout << inf << std::endl;
 		}
 	}
 	error = false;
 	return;
 }
+bool Loader::hasErrors(std::string line)
+{
+	std::cout << "Error on line " << std::dec << count << ": " << line << std:: endl;
+	return true;
+}
+
 //bool Loader::readFile(std::string fname, std::ifstream& inf)
 
 bool Loader::loadline(std::string line, uint64_t *addr, bool & error)
@@ -130,22 +185,34 @@ bool Loader::loadline(std::string line, uint64_t *addr, bool & error)
 	int num = 0;
 	uint64_t address = 0;
 //	if(checkSpaces(line, 0, line.length() - 1))
+	if(line[28] != '|' && line[29] != '|')
+	{
+		return false;
+	}
 	if(isBlank(line))
 	{
-		std::cout << "ZEYZAL" << std::endl;
+//		std::cout << "ZEYZAL" << std::endl;
 		return true;
 	}
+	
 //	else if(checkSpaces(line, 0, COMMENT - 1) && (line[COMMENT] == '|' || line[COMMENT + 1] == '|'))
 	else if(isComment(line))
 	{
-//		std::cout << "SONICHU" << std::endl;
 		return true;
+	}
+	else if(line[1] != 'x')
+	{
+		return false;
+	}
+	else if(line[0] != '0')
+	{
+		return false;
 	}
 	else if(checkAddress(line, addr, error))
 	{
 //		std::cout << "BIGB" << std::endl;
-		std::cout << "BRAWL" << line << std::endl;
-		address = getAddress(line);
+//		std::cout << "BRAWL" << line << std::endl;
+		address = getAddress(line, 2, 4);
 //		if(line[8] != ' ')
 		if(hasData(line))
 		{
@@ -157,7 +224,7 @@ bool Loader::loadline(std::string line, uint64_t *addr, bool & error)
 			}
 			else
 			{
-				std::cout << "CrawL" << address << std::endl;
+//				std::cout << "CrawL" << address << std::endl;
 				storeData(line, address, error);
 				*addr = address + num;
 				return true;
@@ -172,14 +239,14 @@ bool Loader::loadline(std::string line, uint64_t *addr, bool & error)
 	}
 	return false;
 }
-uint32_t Loader::convert(std::string line, int start, int end)
+uint64_t Loader::convert(std::string line, int start, int end)
 {
-	std::fstream x;
-	uint32_t add = 5;
+	std::stringstream x;
+	uint64_t add = 0;
 	line = line.substr(start, end);
 	x << std::hex << line;
 	x >> add;
-	std::cout << "CrawL" << x << std::endl;
+//	std::cout << "BEAST" << x << std::endl;
 	return add;
 	
 }
@@ -189,6 +256,7 @@ bool Loader::isComment(std::string line)
 	{
 		return true;
 	}
+	
 	return false;
 }
 bool Loader::isBlank(std::string line)
@@ -199,23 +267,42 @@ bool Loader::isBlank(std::string line)
 	}
 	return false;
 }
-uint64_t Loader::getAddress(std::string line)
+bool Loader::checkSpaces(std::string line, uint32_t start, uint32_t end)
+{
+	if(end >= line.length())
+	{
+		std::cout << "big line error" << std::endl;
+		exit(1);
+	}
+	for(unsigned int i = start; i <= end; i++)
+	{
+		if(!isspace(line[i]))
+		{
+//			std::cout << "SUC" << std::endl;
+			return false;
+		}
+	}
+//	std::cout << "CONGRATZ" << std::endl;
+	return true;
+}
+
+uint64_t Loader::getAddress(std::string line, int start, int end)
 {
 	
 	std::stringstream con;
 	uint64_t address = 0;
-	line = line.substr(ADDRBEGIN, ADDREND - 1);
+	line = line.substr(start, end - 1);
 //	if(line.substr(3, 1) == ":")
 //	{
 //		line = line.substr(0, 3);
 //	}
-	std::cout << "CrawL" << line << std::endl;
+//	std::cout << "CrawL" << line << std::endl;
 	uint64_t hex = std::stoul(line, nullptr, 16);
 	return hex;
 	con << std::hex << line;
-	std::cout << "CLOSE" << line << std::endl;
+//	std::cout << "CLOSE" << line << std::endl;
 	con >> address;
-	std::cout << "EDG" << address << std::endl;
+//	std::cout << "EDG" << address << std::endl;
 	return address;
 }
 bool Loader::hasData(std::string line)
@@ -240,17 +327,18 @@ int Loader::checkData(std::string line)
 		return 0;
 	}
 	std::string data = record.substr(0, record.find(' '));
+	std::string numb = record.substr(0, record.find('|') + 1);
+	std::string num = numb.substr(numb.find_first_of(" "), record.find('|'));
+	if(num.find_first_of("0123456789abcdefABCDEF") < 30) return -1;
 	if(!checkHex(data, 0, data.length() - 1)) return -1;
 	if(data.length() % 2 == 1) return -1;
-	if(record[20] != ' ') return -1;
-	if(record[21] == '|' && line[6] != ' ') return -1;
-	if(record[0] == ' ') return -1;
-
+	if(record[20] != ' ') return -1; 
+	if(record[21] == '|' && line[6] != ' ') return -1; 
+	if(record[0] == ' ') return -1; // first character needs to be a number
 	return data.length() / 2;
 }
 bool Loader::checkAddress(std::string line, uint64_t *addr, bool & error)
 {
-//	std::string ling = line.substr(0, line.length());
 	if(line[0] == '0' && (line[1] == 'x' || line[1] == 'X'))
 	{
 		uint64_t colon = line.find(':', 0);
@@ -282,35 +370,36 @@ bool Loader::checkAddress(std::string line, uint64_t *addr, bool & error)
 void Loader::storeData(std::string line, uint64_t addr, bool & error)
 {
 	int count = 0;
-	std::cout << "BAKANA" << std::endl;
+//	std::cout << "BAKANA" << std::endl;
 	std::string inst = line.substr(7,20);
 	std::string inst2 = line.substr(7,20);
 	unsigned i = 0;
-	std::cout << "CHEESE" << inst << std::endl;
+//	std::cout << "CHEESE" << inst << std::endl;
 	std::string byte = inst.substr(i, 2);
 	while(i < 20 && byte != "  ")
 	{
-		std::cout << "BARD" << line << std::endl;
-		std::cout << "BARS" << addr << std::endl;
+//		std::cout << "BARD" << i << std::endl;
+//		std::cout << "BARS" << addr << std::endl;
 		storeByte(byte, addr, error);
 		addr++;
 		count++;
 		i += 2;
 		byte = inst.substr(i, 2);
-		std::cout << "BARAK" << byte << std::endl;
+//		std::cout << "BARAK" << byte << std::endl;
 //		Memory * mem = Memory::getInstance();
 //		std::cout << "WRRY" << mem->getLong(addr, hex, error); << std::endl;
 	}
 //	uint64_t tempAddr = addr;
 //	unsigned j = 0;
-//	addr -= 3;
+//	addr -= 1;
+//	i -= 2;
 //	byte = inst2.substr(j, 2);
 //	while(count > 0)
 //	{
-//		std::cout << "DAST" << line << std::endl;
+//		std::cout << "DAST" << count << std::endl;
 //		std::cout << "DARK" << addr << std::endl;
 //		storeByte(byte, addr, error);
-//		std::cout << "BALALA" << addr << std::endl;
+//		std::cout << "I" << i << std::endl;
 //		count--;
 //		std::cout << "OBAMA" << byte << std::endl;
 //		addr--;
@@ -333,10 +422,12 @@ bool Loader::checkHex(std::string line, uint64_t start, uint64_t end)
 }
 void Loader::storeByte(std::string byte, uint64_t addr, bool & error)
 {
-	std::cout << "ZEYZAL" << byte << std::endl;
-	std::cout << "ZEYZAL" << addr << std::endl;
+//	std::cout << "ZEYZAL" << byte << std::endl;
+//	std::cout << "ZEYZAL" << addr << std::endl;
 	uint8_t hex = std::stoul(byte, nullptr, 16);
-	Memory *mem = Memory::getInstance();
+	
+//	uint64_t hex = std::stoul(longByte, nullptr, 16);
+//	Memory * mem = Memory::getInstance();
 	mem->putByte(hex, addr, error);
 //	std::cout << "MEMORRY" << mem->putLong(addr, hex, error); << std::endl;
 
