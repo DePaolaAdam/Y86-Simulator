@@ -23,7 +23,8 @@
  * line by line and loads the program into memory.  If no file is given or the file doesn't
  * exist or the file doesn't end with a .yo extension or the .yo file contains errors then
  * loaded is set to false.  Otherwise loaded is set to true.
- *
+ *			
+
  * @param argc is the number of command line arguments passed to the main; should
  *        be 2
  * @param argv[0] is the name of the executable
@@ -55,80 +56,15 @@ Loader::Loader(int argc, char * argv[])
 	
 	bool error = false;
 	load(argv[1], error);
+
 	if(error == true)
 	{
 		return;
 	}
    //If control reaches here then no error was found and the program
    //was loaded into memory.
-	std::stringstream over;
-	std::string inst;
-	std::string myString;
+
 	
-	
-//	std::string test;	
-//	uint64_t dest = 0;
-//	uint8_t arr[8];
-//	for(int i = 0; i < 100; i += 8)
-//	{
-//		uint64_t flip = mem->getLong(i, error);
-//		std::cout << "Z" << flip << std::endl;
-//		over << std::hex << flip;
-//		myString = over.str();
-//		std::cout << "E" << myString << std::endl;
-//	
-//	for(int j = 7; j > 0; j--)
-//	{
-//		arr[7 - j] = (uint8_t)Tools::getByte(flip, j);
-//	}
-//	for(int i = 0; i < 100; i += 8)
-//	{
-//		uint64_t flip = mem->getLong(0, error);
-//		mem->putLong(dest, 0, error);
-//		over << std::hex << flip;
-////		myString = over.str();
-//		std::cout << "WEEWEE" << myString << std::endl;
-//	}
-//	}
-//	std::cout << "E" << arr[1] << std::endl;
-//		mem->putLong(flip, i, error);
-//	}
-//	uint64_t flip = mem->getLong(0, error);
-//	mem->putLong(dest, 0, error);
-//	over << std::hex << flip;
-//	myString = over.str();
-	
-//	for(int i = 0; i < 0x0a0; i += 0x008)
-//	{
-		
-//			if(myString.length() > 16)
-//			{
-//				myString = myString.substr(12, 16);
-//			}
-//		for(int j = 0; j <= myString.length() - 2; j += 2)
-//		{
-//			std::cout << "Z" << i << std::endl;
-//			
-//			std::cout << "B" << myString.length() << std::endl;
-//			std::cout << "Z" << myString << std::endl;
-//			inst = myString.substr(j, 2);
-//			dest = i + (myString.length() - j)/2;
-//			std::cout << "E" << inst << std::endl;
-//			std::cout << "D" << dest << std::endl;
-//			storeByte(inst, dest, error);
-//		}
-		
-//		flip = mem->getLong(i, error);
-//	over << std::hex << flip;
-//	myString = over.str();
-//	std::cout << "WEEWEE" << myString << std::endl;
-//	}
-//	std::cout << "WEEWEE" << myString << std::endl;
-//	myString = myString.substr(16, 15);
-	
-//	std::cout << "OKYE" << myString << std::endl;
-//	myString = myString.substr(16, 16);
-//	std::cout << "GAMATOTO" << myString << std::endl;
    loaded = true;  
   
 }
@@ -149,12 +85,16 @@ void Loader::load(char *file, bool & error)
 		return;
 	}
 	std::string line = "";
-	uint32_t count = 1;
+//	uint32_t count = 1;
 	uint64_t addr = 0;
+	uint64_t tempAddr = 0;
+	bool correct = true;
+	std::string tempLine = "";
 	getline(inf, line);
+	uint32_t c = 0;
 	while(inf)
-	{
-		if(!loadline(line, &addr, error) || addr > 0x1fff)
+	{	
+		if((!loadline(line, &addr, error) || correct == false)  && c != 4096)
 		{
 			std::cout << "Error on line " << std::dec << count << ": " << line << std:: endl;
 			error = true;
@@ -162,11 +102,41 @@ void Loader::load(char *file, bool & error)
 		}
 		else
 		{
-//			loadline(line, &addr, error);
 			count++;	
 			getline(inf, line);
-//			std::cout << line << std::endl;
-//			std::cout << inf << std::endl;
+			
+			if((line[2] == 'f' && line[3] == 'f') && (line[4] != 'f'))
+			{
+				tempLine = line;
+			//	tempAddr = addr;
+				std::string record = line.substr(7);
+				std::string data = record.substr(0, record.find(' '));
+			//	std::cout << "DIRK " << " " << line <<std:: endl;
+			//	std::cout << "blasT" << " " << tempLine <<std:: endl;
+				uint64_t add = getAddress(line, 2, 4);
+				std::stringstream con;
+			//	uint64_t address = 0;
+			//	line = line.substr(2, 3);
+			//	uint64_t hex = std::stoul(line, nullptr, 16);
+			//	std::cout << "OBaMA " << " " << hex <<std:: endl;
+				c = add + data.length() / 2;
+				tempAddr = add;
+			//	std::cout << "OBAAAMA " << " " << c <<std:: endl;
+			if(c >= 4097)
+			{
+				correct = false;
+				error = true;
+			//	std::cout << "MCCAIN " << " " << c <<std:: endl;
+				if(hasErrors(tempLine))return;
+			}
+			
+			}
+			if(c == 4096)
+			{
+				addr = tempAddr;
+				loadline(tempLine, &addr, error);
+				std::cout << "OBMA " << " " << tempAddr <<std:: endl;
+			}
 		}
 	}
 	error = false;
@@ -183,6 +153,7 @@ bool Loader::hasErrors(std::string line)
 bool Loader::loadline(std::string line, uint64_t *addr, bool & error)
 {
 	int num = 0;
+//	uint64_t bound = addr;
 	uint64_t address = 0;
 //	if(checkSpaces(line, 0, line.length() - 1))
 	if(line[28] != '|' && line[29] != '|')
@@ -292,15 +263,10 @@ uint64_t Loader::getAddress(std::string line, int start, int end)
 	std::stringstream con;
 	uint64_t address = 0;
 	line = line.substr(start, end - 1);
-//	if(line.substr(3, 1) == ":")
-//	{
-//		line = line.substr(0, 3);
-//	}
-//	std::cout << "CrawL" << line << std::endl;
 	uint64_t hex = std::stoul(line, nullptr, 16);
 	return hex;
 	con << std::hex << line;
-//	std::cout << "CLOSE" << line << std::endl;
+
 	con >> address;
 //	std::cout << "EDG" << address << std::endl;
 	return address;
@@ -425,10 +391,13 @@ void Loader::storeByte(std::string byte, uint64_t addr, bool & error)
 //	std::cout << "ZEYZAL" << byte << std::endl;
 //	std::cout << "ZEYZAL" << addr << std::endl;
 	uint8_t hex = std::stoul(byte, nullptr, 16);
-	
+//	uint64_t bounds = addr;
 //	uint64_t hex = std::stoul(longByte, nullptr, 16);
 //	Memory * mem = Memory::getInstance();
-	mem->putByte(hex, addr, error);
+	if(addr <= 0x1000)
+	{
+		mem->putByte(hex, addr, error);
+	}
 //	std::cout << "MEMORRY" << mem->putLong(addr, hex, error); << std::endl;
 
 }
