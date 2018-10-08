@@ -11,6 +11,7 @@
 #include "Loader.h"
 #include "Memory.h"
 #include "Tools.h"
+uint64_t tempAdd = 0;
 //first column in file is assumed to be 0
 #define ADDRBEGIN 2   //starting column of 3 digit hex address 
 #define ADDREND 4     //ending column of 3 digit hext address
@@ -64,7 +65,6 @@ Loader::Loader(int argc, char * argv[])
    //If control reaches here then no error was found and the program
    //was loaded into memory.
 
-	
    loaded = true;  
   
 }
@@ -85,7 +85,6 @@ void Loader::load(char *file, bool & error)
 		return;
 	}
 	std::string line = "";
-//	uint32_t count = 1;
 	uint64_t addr = 0;
 	uint64_t tempAddr = 0;
 	bool correct = true;
@@ -141,7 +140,6 @@ bool Loader::hasErrors(std::string line)
 bool Loader::loadline(std::string line, uint64_t *addr, bool & error)
 {
 	int num = 0;
-
 	uint64_t address = 0;
 	if(line[28] != '|' && line[29] != '|')
 	{
@@ -193,7 +191,6 @@ bool Loader::isComment(std::string line)
 	{
 		return true;
 	}
-	
 	return false;
 }
 bool Loader::isBlank(std::string line)
@@ -230,7 +227,6 @@ uint64_t Loader::convert(std::string line, int start, int end)
 	uint64_t hex = std::stoul(line, nullptr, 16);
 	return hex;
 	con << std::hex << line;
-
 	con >> address;
 	return address;
 }
@@ -303,6 +299,10 @@ void Loader::storeData(std::string line, uint64_t addr, bool & error)
 	std::string inst2 = line.substr(7,20);
 	unsigned i = 0;
 	std::string byte = inst.substr(i, 2);
+	if(tempAdd > addr)
+	{
+		if(hasErrors(line))return;
+	}
 	while(i < 20 && byte != "  ")
 	{
 		storeByte(byte, addr, error);
@@ -311,6 +311,7 @@ void Loader::storeData(std::string line, uint64_t addr, bool & error)
 		i += 2;
 		byte = inst.substr(i, 2);
 	}
+	tempAdd = addr;
 }
 bool Loader::checkHex(std::string line, uint64_t start, uint64_t end)
 {
