@@ -11,7 +11,7 @@ class Loader
 	bool checkSpaces(std::string line, uint32_t start, uint32_t end);
 	bool loadline(std::string line, uint64_t *addr, bool & error);
 	bool checkAddress(std::string line, uint64_t *addr, bool & error);
-	uint64_t getAddress(std::string line, int start, int end);
+	uint64_t convert(std::string line, int start, int end);
 	int checkData(std::string line);
 	bool checkHex(std::string line, uint64_t start, uint64_t end);
 	void storeData(std::string line, uint64_t addr, bool & error);
@@ -19,7 +19,6 @@ class Loader
 	bool hasData(std::string line);
 	bool isComment(std::string line);
 	bool isBlank(std::string line);
-	uint64_t convert(std::string line, int start, int end);
 	bool hasErrors(std::string line);
       bool isLoaded();
 };
