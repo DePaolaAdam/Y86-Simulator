@@ -102,8 +102,14 @@ void Loader::load(char *file, bool & error)
 		else
 		{
 			count++;	
+	//		std::cout << "before" << tempAdd << std::endl;
 			getline(inf, line);
-			
+	//		std::cout << "after" << tempAdd << std::endl;
+			if(tempAdd > addr)
+			{
+				std::cout << "BERA" << line << std::endl;
+				if(hasErrors(line))return;
+			}
 			if((line[2] == 'f' && line[3] == 'f') && (line[4] != 'f'))
 			{
 				tempLine = line;
@@ -172,7 +178,16 @@ bool Loader::loadline(std::string line, uint64_t *addr, bool & error)
 				return false;
 			}
 			else
-			{
+			{	
+				std::cout << "before" << *addr << std::endl;
+				std::cout << "after" << tempAdd << std::endl;
+				if(tempAdd > *addr)
+				{
+					std::cout << "after" << tempAdd << std::endl;
+					std::cout << "BEka" << addr << std::endl;
+					if(hasErrors(line))return false;
+					
+				}
 				storeData(line, address, error);
 				*addr = address + num;
 				return true;
@@ -299,9 +314,11 @@ void Loader::storeData(std::string line, uint64_t addr, bool & error)
 	std::string inst2 = line.substr(7,20);
 	unsigned i = 0;
 	std::string byte = inst.substr(i, 2);
+	std::cout << "BEka" << addr << std::endl;
 	if(tempAdd > addr)
 	{
 		if(hasErrors(line))return;
+		line = "DLKSJDFK:LDJFKL";
 	}
 	while(i < 20 && byte != "  ")
 	{
@@ -310,8 +327,8 @@ void Loader::storeData(std::string line, uint64_t addr, bool & error)
 		count++;
 		i += 2;
 		byte = inst.substr(i, 2);
+		tempAdd = addr;
 	}
-	tempAdd = addr;
 }
 bool Loader::checkHex(std::string line, uint64_t start, uint64_t end)
 {
